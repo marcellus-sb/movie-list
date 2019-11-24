@@ -6,6 +6,9 @@
 build/
 DerivedData/
 
+# R.Swift
+*.generated.swift
+
 ## Various settings
 *.pbxuser
 !default.pbxuser
@@ -29,8 +32,8 @@ xcuserdata/
 *.dSYM
 
 ## Playgrounds
-timeline.xctimeline
-playground.xcworkspace
+movie-list.xctimeline
+movie-list.xcworkspace
 
 # Swift Package Manager
 #
