@@ -12,8 +12,9 @@ This project is a playground to exercise and test Swift codes. The idea is devel
 - [ ] Youtube Trailer
 - [ ] Chromecast
 
-## Enhancements
+## TODO/Enhancements
 
+- Handle HTTP errors
 - Smoother pagination
 
 ## Project Details
