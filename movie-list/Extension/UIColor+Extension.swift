@@ -47,4 +47,14 @@ extension UIColor {
             UIColor(red: 155/255, green: 155/255, blue: 155/255, alpha: 0.5) :
             UIColor(red: 155/255, green: 155/255, blue: 155/255, alpha: 0.6)
     }
+    
+    //MARK: - Cross Theme colors
+    
+    @nonobjc class var dsTextDarkCross: UIColor {
+        return UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.9)
+    }
+    
+    @nonobjc class var dsTextLightCross: UIColor {
+        return UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.9)
+    }
 }

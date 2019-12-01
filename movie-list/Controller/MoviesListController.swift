@@ -16,8 +16,8 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     
     //MARK: - Public
     
-    var genresListVM = GenresListViewModel()
-    var moviesListVM = MoviesListViewModel()
+    var genresList = GenresListViewModel()
+    var moviesList = MoviesListViewModel()
     
     //MARK: - Private
     
@@ -52,13 +52,13 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     }
     
     private func loadData() {
-        self.genresListVM.loadGenres()
+        self.genresList.loadGenres()
         self.loadMoreMovies()
     }
     
     private func loadMoreMovies() {
         self.isLoading = true
-        self.moviesListVM.loadNextPage() { [weak self] newResultsCount, error in
+        self.moviesList.loadNextPage() { [weak self] newResultsCount, error in
             guard let self = self else { return }
             if let err = error {
                 self.showError(error: err)
@@ -76,14 +76,14 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     //MARK: - TableView Data Source
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let loadingCells = self.moviesListVM.hasNextPage ? self.LOADING_CELL_COUNT : 0
-        return self.moviesListVM.movies.count + loadingCells
+        let loadingCells = self.moviesList.hasNextPage ? self.LOADING_CELL_COUNT : 0
+        return self.moviesList.movies.count + loadingCells
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if self.moviesListVM.movies.count > indexPath.row {
+        if self.moviesList.movies.count > indexPath.row {
             if let cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.movieCell, for: indexPath) {
-                cell.setData(self.moviesListVM.movies[indexPath.row])
+                cell.setData(self.moviesList.movies[indexPath.row])
                 return cell
             }
         } else if let cellLoading = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.movieLoadingCell, for: indexPath) {
@@ -98,7 +98,7 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     //MARK: - TableView Delegate
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row > self.moviesListVM.movies.count-1 && !self.isLoading {
+        if indexPath.row > self.moviesList.movies.count-1 && !self.isLoading {
             self.loadMoreMovies()
         }
     }
@@ -108,6 +108,16 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //TODO: call detail
+        if indexPath.row < self.moviesList.movies.count {
+            let movie = self.moviesList.movies[indexPath.row]
+            self.performSegue(withIdentifier: R.segue.moviesListController.showDetail, sender: movie)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? MovieDetailController, let movie = sender as? MovieViewModel {
+            vc.movie = movie
+            vc.genresList = self.genresList
+        }
     }
 }

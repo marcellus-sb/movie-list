@@ -20,6 +20,20 @@ final class GenresListViewModel {
         self.genreAPI = genreAPI
     }
     
+    func getGenresLabelFrom(movie: MovieViewModel) -> String {
+        var result = ""
+        for genreId in movie.genreIds {
+            result += result.isEmpty ? "" : ", "
+            result += self.getGenreNameBy(id: genreId)
+        }
+        
+        return result
+    }
+    
+    private func getGenreNameBy(id: Int) -> String {
+        return self.genres.filter({ $0.id == id }).first?.name ?? ""
+    }
+    
     func loadGenres() {
         genreAPI.loadGenres() { [weak self] genresList, error in
             guard error == nil else {
