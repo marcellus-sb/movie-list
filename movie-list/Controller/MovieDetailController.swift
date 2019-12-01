@@ -16,7 +16,7 @@ class MovieDetailController: UIViewController {
         return 44.0 + UIApplication.shared.statusBarFrame.height
     }
     private let DEFAULT_BACKGROUND_HEIGHT: CGFloat = 360
-    private let ANIMATION_DURATION: Double = 0.1
+    private let ANIMATION_DURATION: Double = 0.2
     
     //MARK: - Public
     
@@ -151,14 +151,15 @@ extension MovieDetailController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         if offsetY <= 0 {
-            if offsetY < -95 {
+            if offsetY < -110 {
                 self.dismiss(animated: true, completion: nil)
             } else {
                 self.backgroundImageHeightConstraint.constant = DEFAULT_BACKGROUND_HEIGHT + (-offsetY)
             }
         } else {
             self.showTopBar(offsetY > 90)
-            self.backgroundImageHeightConstraint.constant = DEFAULT_BACKGROUND_HEIGHT - (offsetY * 0.4)
+            let bgHeight = DEFAULT_BACKGROUND_HEIGHT - offsetY
+            self.backgroundImageHeightConstraint.constant = bgHeight > 0 ? bgHeight : 0
         }
     }
     

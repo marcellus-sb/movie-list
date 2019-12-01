@@ -229,14 +229,14 @@
                                 </view>
                                 <blurEffect style="dark"/>
                             </visualEffectView>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZF-F4-f5L">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZF-F4-f5L">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cQt-4u-I54">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="6jc-C3-UJC">
-                                                <rect key="frame" x="0.0" y="0.0" width="320" height="459"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="320" height="475"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bSd-ta-Ft7" customClass="GradientView" customModule="movie_list" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="320" height="360"/>
@@ -277,13 +277,13 @@
                                                                 </constraints>
                                                             </view>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dR9-21-5hn">
-                                                                <rect key="frame" x="226" y="317" width="78" height="35"/>
+                                                                <rect key="frame" x="216" y="312" width="88" height="40"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Itr-1Z-l8A">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="35" height="35"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                                                         <constraints>
-                                                                            <constraint firstAttribute="width" constant="35" id="2Nw-Tv-0TE"/>
-                                                                            <constraint firstAttribute="height" constant="35" id="g5C-h4-YU8"/>
+                                                                            <constraint firstAttribute="width" constant="40" id="2Nw-Tv-0TE"/>
+                                                                            <constraint firstAttribute="height" constant="40" id="g5C-h4-YU8"/>
                                                                         </constraints>
                                                                         <inset key="imageEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                                         <state key="normal" image="share"/>
@@ -292,10 +292,10 @@
                                                                         </connections>
                                                                     </button>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nnp-Nk-gUO">
-                                                                        <rect key="frame" x="43" y="0.0" width="35" height="35"/>
+                                                                        <rect key="frame" x="48" y="0.0" width="40" height="40"/>
                                                                         <constraints>
-                                                                            <constraint firstAttribute="width" constant="35" id="A2D-DW-E6m"/>
-                                                                            <constraint firstAttribute="height" constant="35" id="NK5-2D-qh2"/>
+                                                                            <constraint firstAttribute="width" constant="40" id="A2D-DW-E6m"/>
+                                                                            <constraint firstAttribute="height" constant="40" id="NK5-2D-qh2"/>
                                                                         </constraints>
                                                                         <inset key="imageEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                                         <state key="normal" image="heart"/>
@@ -305,11 +305,11 @@
                                                                     </button>
                                                                 </subviews>
                                                             </stackView>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eg0-G1-ajf">
-                                                                <rect key="frame" x="16" y="317" width="35" height="35"/>
+                                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eg0-G1-ajf">
+                                                                <rect key="frame" x="16" y="312" width="40" height="40"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" constant="35" id="Wev-VG-fnG"/>
-                                                                    <constraint firstAttribute="height" constant="35" id="bbE-fl-0F3"/>
+                                                                    <constraint firstAttribute="width" constant="40" id="Wev-VG-fnG"/>
+                                                                    <constraint firstAttribute="height" constant="40" id="bbE-fl-0F3"/>
                                                                 </constraints>
                                                                 <inset key="imageEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                                 <state key="normal" image="bell"/>
@@ -318,8 +318,8 @@
                                                                 </connections>
                                                             </button>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00/00/0000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BFV-75-EBp">
-                                                                <rect key="frame" x="55" y="327.5" width="68.5" height="14.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                <rect key="frame" x="60" y="324" width="73.5" height="16"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
@@ -327,6 +327,7 @@
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
                                                             <constraint firstAttribute="trailing" secondItem="dR9-21-5hn" secondAttribute="trailing" constant="16" id="2Om-1a-VGt"/>
+                                                            <constraint firstItem="dR9-21-5hn" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="BFV-75-EBp" secondAttribute="trailing" constant="8" id="71J-Zp-T7s"/>
                                                             <constraint firstItem="BG4-S3-S77" firstAttribute="top" secondItem="bSd-ta-Ft7" secondAttribute="top" constant="65" id="8ya-Re-gHo"/>
                                                             <constraint firstItem="eg0-G1-ajf" firstAttribute="leading" secondItem="bSd-ta-Ft7" secondAttribute="leading" constant="16" id="DLW-Df-oTh"/>
                                                             <constraint firstItem="BG4-S3-S77" firstAttribute="centerX" secondItem="bSd-ta-Ft7" secondAttribute="centerX" id="DQt-TY-mVi"/>
@@ -349,12 +350,12 @@
                                                                 <real key="value" value="0.0"/>
                                                             </userDefinedRuntimeAttribute>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="endLocation">
-                                                                <real key="value" value="1"/>
+                                                                <real key="value" value="2"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WdN-sf-IFC">
-                                                        <rect key="frame" x="0.0" y="360" width="320" height="99"/>
+                                                        <rect key="frame" x="0.0" y="360" width="320" height="115"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="Genres" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9qb-dd-I30">
                                                                 <rect key="frame" x="16" y="32" width="288" height="14.5"/>
@@ -375,7 +376,7 @@
                                                             <constraint firstAttribute="trailing" secondItem="28e-K6-IIv" secondAttribute="trailing" constant="16" id="3kD-GO-Z0u"/>
                                                             <constraint firstItem="28e-K6-IIv" firstAttribute="leading" secondItem="WdN-sf-IFC" secondAttribute="leading" constant="16" id="9SY-US-lhF"/>
                                                             <constraint firstItem="9qb-dd-I30" firstAttribute="top" secondItem="WdN-sf-IFC" secondAttribute="top" constant="32" id="PV9-7v-lZQ"/>
-                                                            <constraint firstAttribute="bottom" secondItem="28e-K6-IIv" secondAttribute="bottom" constant="16" id="Q8b-F2-joZ"/>
+                                                            <constraint firstAttribute="bottom" secondItem="28e-K6-IIv" secondAttribute="bottom" constant="32" id="Q8b-F2-joZ"/>
                                                             <constraint firstItem="9qb-dd-I30" firstAttribute="leading" secondItem="WdN-sf-IFC" secondAttribute="leading" constant="16" id="eeh-zf-GUx"/>
                                                             <constraint firstItem="28e-K6-IIv" firstAttribute="top" secondItem="9qb-dd-I30" secondAttribute="bottom" constant="16" id="sut-Ga-qdm"/>
                                                         </constraints>
