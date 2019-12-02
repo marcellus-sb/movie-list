@@ -16,7 +16,9 @@ class MovieCell: UITableViewCell {
     
     @IBOutlet weak var coverImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var genresLabel: UILabel!
     @IBOutlet weak var overviewLabel: UILabel!
+    @IBOutlet weak var releaseDateLabel: UILabel!
     @IBOutlet weak var ratingImageView: UIImageView!
     @IBOutlet weak var ratingLabel: UILabel!
     
@@ -33,7 +35,9 @@ class MovieCell: UITableViewCell {
     private func applyStyle() {
         self.backgroundColor = .clear
         self.titleLabel.textColor = .dsTextPrimary
+        self.genresLabel.textColor = .dsTextPrimary
         self.overviewLabel.textColor = .dsTextSecondary
+        self.releaseDateLabel.textColor = .dsTextPrimary
         self.ratingLabel.textColor = .dsHighlight
         self.ratingImageView.tintColor = .dsHighlight
         
@@ -43,7 +47,9 @@ class MovieCell: UITableViewCell {
     func setData(_ movieVM: MovieViewModel) {
         self.movieVM = movieVM
         self.titleLabel.text = movieVM.title
+        self.genresLabel.text = movieVM.genresText
         self.overviewLabel.text = movieVM.overview
+        self.releaseDateLabel.text = movieVM.releaseDateText
         self.ratingLabel.text = "\(movieVM.voteAverage) (\(movieVM.voteCount))"
         self.ratingImageView.image = R.image.star()?.withRenderingMode(.alwaysTemplate)
         

@@ -8,9 +8,9 @@
 
 import Foundation
 
-final class MovieViewModel {
+final class MovieViewModel: Codable {
     private let IMG_PREFIX_URL = "https://image.tmdb.org/t/p/w185"
-    private let movie: Movie
+    private var movie: Movie
     
     var id: Int {
         return self.movie.id ?? 0
@@ -60,6 +60,10 @@ final class MovieViewModel {
         return self.movie.genre_ids ?? []
     }
     
+    var genresText: String {
+        return self.movie.genresText ?? ""
+    }
+    
     var title: String {
         return self.movie.title ?? ""
     }
@@ -72,21 +76,29 @@ final class MovieViewModel {
         return self.movie.overview ?? ""
     }
     
-    var releaseDate: String {
+    var releaseDate: Date {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd"
         
+        if let inDate = self.movie.release_date, let date = inputFormatter.date(from: inDate) {
+            return date
+        } else {
+            return Date()
+        }
+    }
+    
+    var releaseDateText: String {
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "dd/MM/yyyy"
         
-        if let inDate = self.movie.release_date, let date = inputFormatter.date(from: inDate) {
-            return outputFormatter.string(from: date)
-        } else {
-            return ""
-        }
+        return outputFormatter.string(from: self.releaseDate)
     }
     
     init(movie: Movie) {
         self.movie = movie
+    }
+    
+    func loadGenres(_ genresList: GenresListViewModel) {
+        self.movie.genresText = genresList.getGenresLabelFrom(movie: self)
     }
 }

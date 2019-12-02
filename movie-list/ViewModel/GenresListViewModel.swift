@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias GenresListLoadPageCompletion = (Error?) -> Void
+typealias GenresListLoadCompletion = (Error?) -> Void
 
 final class GenresListViewModel {
     private let genreAPI: GenreAPI
@@ -34,9 +34,10 @@ final class GenresListViewModel {
         return self.genres.filter({ $0.id == id }).first?.name ?? ""
     }
     
-    func loadGenres() {
+    func loadGenres(completion: @escaping GenresListLoadCompletion) {
         genreAPI.loadGenres() { [weak self] genresList, error in
             guard error == nil else {
+                completion(error)
                 return
             }
             
@@ -47,6 +48,7 @@ final class GenresListViewModel {
                     self?.genres.append(GenreViewModel(genre: genre))
                 }
             }
+            completion(nil)
         }
     }
 }

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Marcellus Selga Batista. All rights reserved.
 //
 
-struct Movie: Decodable {
+struct Movie: Codable {
     var popularity: Double?
     var vote_count: Int?
     var video: Bool?
@@ -21,4 +21,5 @@ struct Movie: Decodable {
     var vote_average: Double?
     var overview: String?
     var release_date: String?
+    var genresText: String?
 }

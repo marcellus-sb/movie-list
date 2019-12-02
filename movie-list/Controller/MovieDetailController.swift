@@ -21,7 +21,6 @@ class MovieDetailController: UIViewController {
     //MARK: - Public
     
     var movie: MovieViewModel?
-    var genresList: GenresListViewModel?
     
     //MARK: - Outlets
     
@@ -67,7 +66,6 @@ class MovieDetailController: UIViewController {
         self.highlightReleaseDateLabel.textColor = .dsTextDarkCross
         self.topBarTitleLabel.textColor = .dsTextDarkCross
         self.shareButton.tintColor = .dsTextDarkCross
-        self.favoriteButton.tintColor = .dsTextDarkCross
         self.reminderButton.tintColor = .dsTextDarkCross
         
         self.highlightCoverImage.clipsToBounds = false
@@ -86,6 +84,10 @@ class MovieDetailController: UIViewController {
         self.closeButton.clipsToBounds = true
         
         self.topBarHeightConstraint.constant = TOP_BAR_HEIGHT
+        
+        if let selectedMovie = self.movie {
+            self.favoriteButton.tintColor = Favorites.shared.isFavorite(movie: selectedMovie) ? .dsRed : .dsTextDarkCross
+        }
     }
     
     private func loadData() {
@@ -106,9 +108,9 @@ class MovieDetailController: UIViewController {
         }
         
         self.topBarTitleLabel.text = movieLoaded.title
-        self.highlightReleaseDateLabel.text = movieLoaded.releaseDate
+        self.highlightReleaseDateLabel.text = movieLoaded.releaseDateText
         self.highlightRatingLabel.text = "\(movieLoaded.voteAverage) (\(movieLoaded.voteCount))"
-        self.detailGenresLabel.text = self.genresList?.getGenresLabelFrom(movie: movieLoaded)
+        self.detailGenresLabel.text = movieLoaded.genresText
         self.detailDescriptionLabel.text = movieLoaded.overview
         
         self.closeButton.setImage(R.image.close()?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -117,6 +119,7 @@ class MovieDetailController: UIViewController {
         self.reminderButton.setImage(R.image.bell()?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.highlightRatingImageView.image = R.image.star()?.withRenderingMode(.alwaysTemplate)
         
+        self.reminderButton.isHidden = movieLoaded.releaseDate < Date()
     }
     
     //MARK: - Actions
@@ -140,10 +143,15 @@ class MovieDetailController: UIViewController {
     }
     
     @IBAction func toggleFavorite() {
-        //TODO: favorite action
-        let alert = UIAlertController(title: "TOOD", message: "Favorite is not ready yet.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        if let selectedMovie = self.movie {
+            if Favorites.shared.isFavorite(movie: selectedMovie) {
+                Favorites.shared.removeMovie(selectedMovie)
+                self.favoriteButton.tintColor = .dsTextDarkCross
+            } else {
+               Favorites.shared.addMovie(selectedMovie)
+                self.favoriteButton.tintColor = .dsRed
+            }
+        }
     }
 }
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class MoviesListController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class MoviesListController: TabBaseController, UITableViewDataSource, UITableViewDelegate {
     
     //MARK: - Constants
     
@@ -28,6 +28,7 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     //MARK: - Outlets
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var orderButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,35 +36,50 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
         self.loadData()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     //MARK: - Private Methods
     
     private func applyStyle() {
-        //Navigation Bar
-        self.navigationController?.navigationBar.barTintColor = .dsNavbarBG
-        self.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.dsTextPrimary]
-        
-        //Controller
-        self.view.backgroundColor = .dsBGPrimary
         self.tableView.backgroundColor = .clear
+        self.orderButton.tintColor = .dsTextPrimary
     }
     
     private func loadData() {
-        self.genresList.loadGenres()
-        self.loadMoreMovies()
+        let group = DispatchGroup()
+        self.loadAllGenres(group)
+        self.loadMoreMovies(group)
+        
+        group.notify(queue: DispatchQueue.main) { [weak self] in
+            self?.updateGenresText()
+            self?.tableView.reloadData()
+        }
     }
     
-    private func loadMoreMovies() {
+    private func updateGenresText() {
+        for movie in self.moviesList.movies {
+            movie.loadGenres(self.genresList)
+        }
+    }
+    
+    private func loadAllGenres(_ group: DispatchGroup) {
+        group.enter()
+        self.genresList.loadGenres() { error in
+            group.leave()
+        }
+    }
+    
+    private func loadMoreMovies(_ group: DispatchGroup? = nil) {
+        group?.enter()
         self.isLoading = true
-        self.moviesList.loadNextPage() { [weak self] newResultsCount, error in
+        self.moviesList.loadNextPage(genresList: self.genresList) { [weak self] newResultsCount, error in
             guard let self = self else { return }
             if let err = error {
                 self.showError(error: err)
             } else {
-                self.tableView.reloadData()
+                if let dispatchGroup = group {
+                    dispatchGroup.leave()
+                } else {
+                    self.tableView.reloadData()
+                }
                 self.isLoading = false
             }
         }
@@ -117,7 +133,15 @@ final class MoviesListController: UIViewController, UITableViewDataSource, UITab
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? MovieDetailController, let movie = sender as? MovieViewModel {
             vc.movie = movie
-            vc.genresList = self.genresList
         }
     }
+    
+    //MARK: - Actions
+    
+    @IBAction func orderList() {
+        self.moviesList.orderType = self.moviesList.orderType == .ascending ? .descending : .ascending
+        self.tableView.reloadData()
+        self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    }
+    
 }
