@@ -6,9 +6,10 @@ This project is a playground to exercise and test Swift codes. The idea is devel
 
 - [x] List Movies
 - [x] Movie Detail
+- [x] Favorites
+- [x] Order List
 - [ ] Change Theme
 - [ ] Reminder
-- [ ] Favorites
 - [ ] Share
 - [ ] Youtube Trailer
 - [ ] Chromecast
