@@ -5,10 +5,11 @@ This project is a playground to exercise and test Swift codes. The idea is devel
 ## Features
 
 - [x] List Movies
-- [ ] Movie Detail
+- [x] Movie Detail
 - [ ] Change Theme
 - [ ] Reminder
 - [ ] Favorites
+- [ ] Share
 - [ ] Youtube Trailer
 - [ ] Chromecast
 
