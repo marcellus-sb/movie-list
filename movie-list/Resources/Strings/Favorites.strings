@@ -1,0 +1,9 @@
+/* 
+  Favorites.strings
+  movie-list
+
+  Created by Marcellus Selga Batista on 01/03/20.
+  Copyright © 2020 Marcellus Selga Batista. All rights reserved.
+*/
+
+"empty.state" = "Você ainda não tem favoritos";

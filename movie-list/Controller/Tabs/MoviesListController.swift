@@ -32,11 +32,17 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.regiterCells()
         self.applyStyle()
         self.loadData()
     }
     
     //MARK: - Private Methods
+    
+    private func regiterCells() {
+        self.tableView.register(MovieCellView.self, forCellReuseIdentifier: MovieCellView.identifier)
+        self.tableView.register(MovieLoadingCellView.self, forCellReuseIdentifier: MovieLoadingCellView.identifier)
+    }
     
     private func applyStyle() {
         self.tableView.backgroundColor = .clear
@@ -98,15 +104,14 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if self.moviesList.movies.count > indexPath.row {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.movieCell, for: indexPath) {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: MovieCellView.identifier, for: indexPath) as? MovieCellView {
                 cell.setData(self.moviesList.movies[indexPath.row])
                 return cell
             }
-        } else if let cellLoading = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.movieLoadingCell, for: indexPath) {
+        } else if let cellLoading = tableView.dequeueReusableCell(withIdentifier: MovieLoadingCellView.identifier, for: indexPath) as? MovieLoadingCellView {
             cellLoading.startAnimation()
             return cellLoading
         }
-        
         
         return UITableViewCell()
     }

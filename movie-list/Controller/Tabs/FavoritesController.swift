@@ -14,6 +14,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.regiterCells()
         self.applyStyle()
     }
     
@@ -24,6 +25,10 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     
     //MARK: - Private Methods
     
+    private func regiterCells() {
+        self.tableView.register(MovieCellView.self, forCellReuseIdentifier: MovieCellView.identifier)
+    }
+    
     private func applyStyle() {
         self.tableView.backgroundColor = .clear
     }
@@ -31,7 +36,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     private func showEmptyMessage() {
         let rect = CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: self.view.bounds.size.width, height: self.view.bounds.size.height))
         let messageLabel = UILabel(frame: rect)
-        messageLabel.text = "Você ainda não tem favoritos"
+        messageLabel.text = R.string.favorites.emptyState()
         messageLabel.textColor = .dsTextPrimary
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
@@ -55,7 +60,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.movieCell, for: indexPath) {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: MovieCellView.identifier, for: indexPath) as? MovieCellView {
             let movie = Favorites.shared.list[indexPath.row]
             cell.setData(movie)
             return cell
