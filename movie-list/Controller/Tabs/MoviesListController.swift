@@ -131,7 +131,8 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row < self.moviesList.movies.count {
             let movie = self.moviesList.movies[indexPath.row]
-            self.performSegue(withIdentifier: R.segue.moviesListController.showDetail, sender: movie)
+            MovieDetail2Controller.loadDetail(movie: movie, fromVC: self)
+//            self.performSegue(withIdentifier: R.segue.moviesListController.showDetail, sender: movie)
         }
     }
     
