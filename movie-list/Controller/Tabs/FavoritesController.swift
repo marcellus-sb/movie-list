@@ -62,7 +62,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: MovieCellView.identifier, for: indexPath) as? MovieCellView {
             let movie = Favorites.shared.list[indexPath.row]
-            cell.setData(movie)
+            cell.loadData(movie)
             return cell
         }
         
@@ -70,7 +70,6 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     }
     
     //MARK: - TableView Delegate
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 155.0
     }
@@ -78,13 +77,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row < Favorites.shared.list.count {
             let movie = Favorites.shared.list[indexPath.row]
-            self.performSegue(withIdentifier: R.segue.favoritesController.showDetail, sender: movie)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? MovieDetailController, let movie = sender as? MovieViewModel {
-            vc.movie = movie
+            MovieDetail2Controller.loadDetail(movie: movie, fromVC: self)
         }
     }
 }

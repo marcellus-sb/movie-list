@@ -8,6 +8,12 @@
 
 import UIKit
 
+protocol MovieDetailActionDelegate: AnyObject {
+    func toggleReminder()
+    func doShare()
+    func toggleFavorite(completion: @escaping (Bool) -> Void)
+}
+
 class MovieDetail2Controller: UIViewController {
     
     //MARK: - Constants
@@ -32,7 +38,7 @@ class MovieDetail2Controller: UIViewController {
     }()
     
     lazy var headerView: MovieDetailHeaderView = {
-        let view = MovieDetailHeaderView()
+        let view = MovieDetailHeaderView(actionDelegate: self)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -57,10 +63,18 @@ class MovieDetail2Controller: UIViewController {
         return button
     }()
     
+    lazy var topBarView: MovieDetailTopBarView = {
+        let view = MovieDetailTopBarView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
     //MARK: - Properties
     var movie: MovieViewModel
     
     var backgroundViewHeightConstraint: NSLayoutConstraint?
+    var topBarTopConstraint: NSLayoutConstraint?
     
     
     // MARK: - Static
@@ -94,24 +108,10 @@ class MovieDetail2Controller: UIViewController {
     }
     
     private func loadData() {
-        self.headerView.loadCoverImage(url: self.movie.posterPath)
-        self.bodyView.setData(genres: self.movie.genresText, description: self.movie.overview)
+        self.headerView.loadData(movie: self.movie, favoriteIsActive: Favorites.shared.isFavorite(movie: self.movie))
+        self.bodyView.loadData(genres: self.movie.genresText, description: self.movie.overview)
         self.backgroundView.loadImage(url: self.movie.backdropPath)
-        
-//        
-//        self.topBarTitleLabel.text = movieLoaded.title
-//        self.highlightReleaseDateLabel.text = movieLoaded.releaseDateText
-//        self.highlightRatingLabel.text = "\(movieLoaded.voteAverage) (\(movieLoaded.voteCount))"
-//        self.detailGenresLabel.text = movieLoaded.genresText
-//        self.detailDescriptionLabel.text = movieLoaded.overview
-//        
-//        self.closeButton.setImage(R.image.close()?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        self.shareButton.setImage(R.image.share()?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        self.favoriteButton.setImage(R.image.heart()?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        self.reminderButton.setImage(R.image.bell()?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        self.highlightRatingImageView.image = R.image.star()?.withRenderingMode(.alwaysTemplate)
-//        
-//        self.reminderButton.isHidden = movieLoaded.releaseDate < Date()
+        self.topBarView.titleLabel.text = self.movie.title
     }
     
     // MARK: - Layout
@@ -127,6 +127,7 @@ class MovieDetail2Controller: UIViewController {
     private func addViews() {
         self.view.addSubview(self.backgroundView)
         self.view.addSubview(self.stackScrollView)
+        self.view.addSubview(self.topBarView)
         self.view.addSubview(self.closeButton)
         
         self.stackScrollView.addArrangedViews([
@@ -165,6 +166,15 @@ class MovieDetail2Controller: UIViewController {
         } else {
             self.closeButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
         }
+        
+        NSLayoutConstraint.activate([
+            self.topBarView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.topBarView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.topBarView.heightAnchor.constraint(equalToConstant: self.TOP_BAR_HEIGHT)
+        ])
+        
+        self.topBarTopConstraint = self.topBarView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: -self.TOP_BAR_HEIGHT)
+        self.topBarTopConstraint?.isActive = true
     }
     
     //MARK: - Actions
@@ -191,25 +201,50 @@ extension MovieDetail2Controller: UIScrollViewDelegate {
     }
     
     private func showTopBar(_ value: Bool) {
-//        if value && self.topBarView.isHidden {
-//            self.topBarTopConstraint.constant = 0
-//            self.topBarView.isHidden = false
-//            self.view.setNeedsLayout()
-//            UIView.animate(withDuration: ANIMATION_DURATION) { [weak self] in
-//                self?.view.layoutIfNeeded()
-//            }
-//        } else if !value && !self.topBarView.isHidden {
-//            self.topBarTopConstraint.constant = -self.TOP_BAR_HEIGHT
-//            self.view.setNeedsLayout()
-//
-//            UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: { [weak self] in
-//                self?.view.layoutIfNeeded()
-//            }, completion: { [weak self] finished in
-//                DispatchQueue.main.asyncAfter(deadline: .now() + (self?.ANIMATION_DURATION ?? 0)) { [weak self] in
-//                    self?.topBarView.isHidden = true
-//                }
-//            })
-//        }
-        
+        if value && self.topBarView.isHidden {
+            self.topBarTopConstraint?.constant = 0
+            self.topBarView.isHidden = false
+            self.view.setNeedsLayout()
+            UIView.animate(withDuration: ANIMATION_DURATION) { [weak self] in
+                self?.view.layoutIfNeeded()
+            }
+        } else if !value && !self.topBarView.isHidden {
+            self.topBarTopConstraint?.constant = -self.TOP_BAR_HEIGHT
+            self.view.setNeedsLayout()
+
+            UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: { [weak self] in
+                self?.view.layoutIfNeeded()
+            }, completion: { [weak self] finished in
+                DispatchQueue.main.asyncAfter(deadline: .now() + (self?.ANIMATION_DURATION ?? 0)) { [weak self] in
+                    self?.topBarView.isHidden = true
+                }
+            })
+        }
+    }
+}
+
+extension MovieDetail2Controller: MovieDetailActionDelegate {
+    func toggleReminder() {
+        //TODO: reminder action
+        let alert = UIAlertController(title: "TOOD", message: "Reminder is not ready yet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func doShare() {
+        //TODO: share action
+        let alert = UIAlertController(title: "TOOD", message: "Share is not ready yet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func toggleFavorite(completion: @escaping (Bool) -> Void) {
+        if Favorites.shared.isFavorite(movie: self.movie) {
+            Favorites.shared.removeMovie(self.movie)
+            completion(false)
+        } else {
+            Favorites.shared.addMovie(self.movie)
+            completion(true)
+        }
     }
 }

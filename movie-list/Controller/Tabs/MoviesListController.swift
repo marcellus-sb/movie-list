@@ -105,7 +105,7 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if self.moviesList.movies.count > indexPath.row {
             if let cell = tableView.dequeueReusableCell(withIdentifier: MovieCellView.identifier, for: indexPath) as? MovieCellView {
-                cell.setData(self.moviesList.movies[indexPath.row])
+                cell.loadData(self.moviesList.movies[indexPath.row])
                 return cell
             }
         } else if let cellLoading = tableView.dequeueReusableCell(withIdentifier: MovieLoadingCellView.identifier, for: indexPath) as? MovieLoadingCellView {
@@ -132,18 +132,10 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
         if indexPath.row < self.moviesList.movies.count {
             let movie = self.moviesList.movies[indexPath.row]
             MovieDetail2Controller.loadDetail(movie: movie, fromVC: self)
-//            self.performSegue(withIdentifier: R.segue.moviesListController.showDetail, sender: movie)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? MovieDetailController, let movie = sender as? MovieViewModel {
-            vc.movie = movie
         }
     }
     
     //MARK: - Actions
-    
     @IBAction func orderList() {
         self.moviesList.orderType = self.moviesList.orderType == .ascending ? .descending : .ascending
         self.tableView.reloadData()

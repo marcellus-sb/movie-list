@@ -58,21 +58,10 @@ class MovieCellView: UITableViewCell {
         return label
     }()
     
-    lazy var ratingImageView: UIImageView = {
-        let view = UIImageView()
+    lazy var ratingView: RatingView = {
+        let view = RatingView(imgSize: 10, font: UIFont.systemFont(ofSize: 10))
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.image = R.image.star()?.withRenderingMode(.alwaysTemplate)
-        view.contentMode = .scaleAspectFit
-        view.tintColor = .dsHighlight
         return view
-    }()
-    
-    lazy var ratingLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .dsHighlight
-        label.font = .systemFont(ofSize: 10)
-        return label
     }()
     
     lazy var releaseDateLabel: UILabel = {
@@ -100,13 +89,13 @@ class MovieCellView: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func setData(_ movieVM: MovieViewModel) {
+    func loadData(_ movieVM: MovieViewModel) {
         self.movieVM = movieVM
         self.titleLabel.text = movieVM.title
         self.genresLabel.text = movieVM.genresText
         self.overviewLabel.text = movieVM.overview
         self.releaseDateLabel.text = movieVM.releaseDateText
-        self.ratingLabel.text = "\(movieVM.voteAverage) (\(movieVM.voteCount))"
+        self.ratingView.setRating(rating: movieVM.voteAverage, voteCount: movieVM.voteCount)
         
         ImageWorker.downloadImage(url: movieVM.posterPath) { [weak self] img, url in
             guard let self = self else { return }
@@ -128,8 +117,7 @@ class MovieCellView: UITableViewCell {
         self.containerView.addSubview(self.titleLabel)
         self.containerView.addSubview(self.genresLabel)
         self.containerView.addSubview(self.overviewLabel)
-        self.containerView.addSubview(self.ratingImageView)
-        self.containerView.addSubview(self.ratingLabel)
+        self.containerView.addSubview(self.ratingView)
         self.containerView.addSubview(self.releaseDateLabel)
         
         self.applyConstraints()
@@ -170,22 +158,15 @@ class MovieCellView: UITableViewCell {
         ])
         
         NSLayoutConstraint.activate([
-            self.ratingImageView.topAnchor.constraint(greaterThanOrEqualTo: self.overviewLabel.bottomAnchor, constant: 8),
-            self.ratingImageView.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor, constant: -4),
-            self.ratingImageView.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
-            self.ratingImageView.heightAnchor.constraint(equalToConstant: 10),
-            self.ratingImageView.widthAnchor.constraint(equalToConstant: 10)
+            self.ratingView.topAnchor.constraint(greaterThanOrEqualTo: self.overviewLabel.bottomAnchor, constant: 8),
+            self.ratingView.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor, constant: -4),
+            self.ratingView.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor)
         ])
 
         NSLayoutConstraint.activate([
-            self.ratingLabel.leadingAnchor.constraint(equalTo: self.ratingImageView.trailingAnchor, constant: 4),
-            self.ratingLabel.centerYAnchor.constraint(equalTo: self.ratingImageView.centerYAnchor)
-        ])
-
-        NSLayoutConstraint.activate([
-            self.releaseDateLabel.leadingAnchor.constraint(greaterThanOrEqualTo: self.ratingLabel.trailingAnchor, constant: 6),
+            self.releaseDateLabel.leadingAnchor.constraint(greaterThanOrEqualTo: self.ratingView.trailingAnchor, constant: 6),
             self.releaseDateLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
-            self.releaseDateLabel.centerYAnchor.constraint(equalTo: self.ratingLabel.centerYAnchor)
+            self.releaseDateLabel.centerYAnchor.constraint(equalTo: self.ratingView.centerYAnchor)
         ])
     }
 }

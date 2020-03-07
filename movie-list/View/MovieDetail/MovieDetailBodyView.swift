@@ -50,7 +50,7 @@ class MovieDetailBodyView: UIView {
     }
     
     // MARK: - Public Methods
-    func setData(genres: String, description: String) {
+    func loadData(genres: String, description: String) {
         self.genresLabel.text = genres
         self.descriptionLabel.text = description
     }
