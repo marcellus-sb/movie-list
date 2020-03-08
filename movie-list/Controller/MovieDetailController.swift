@@ -8,150 +8,179 @@
 
 import UIKit
 
+protocol MovieDetailActionDelegate: AnyObject {
+    func toggleReminder()
+    func doShare()
+    func toggleFavorite(completion: @escaping (Bool) -> Void)
+}
+
 class MovieDetailController: UIViewController {
     
     //MARK: - Constants
-    
     private var TOP_BAR_HEIGHT: CGFloat {
         return 44.0 + UIApplication.shared.statusBarFrame.height
     }
+    
     private let DEFAULT_BACKGROUND_HEIGHT: CGFloat = 360
     private let ANIMATION_DURATION: Double = 0.2
     
-    //MARK: - Public
+    // MARK: - Views
+    lazy var backgroundView: MovieDetailBackgroundView = {
+        let view = MovieDetailBackgroundView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
-    var movie: MovieViewModel?
+    lazy var stackScrollView: StackScrollView = {
+        let view = StackScrollView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
-    //MARK: - Outlets
+    lazy var headerView: MovieDetailHeaderView = {
+        let view = MovieDetailHeaderView(actionDelegate: self)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var closeButton: UIButton!
-    @IBOutlet weak var topBarView: UIVisualEffectView!
-    @IBOutlet weak var topBarTitleLabel: UILabel!
-    @IBOutlet weak var topBarTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var topBarHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var backgroundImage: UIImageView!
-    @IBOutlet weak var backgroundImageHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var highlightCoverImage: UIImageView!
-    @IBOutlet weak var highlightReleaseDateLabel: UILabel!
-    @IBOutlet weak var highlightRatingImageView: UIImageView!
-    @IBOutlet weak var highlightRatingLabel: UILabel!
-    @IBOutlet weak var detailView: UIView!
-    @IBOutlet weak var detailGenresLabel: UILabel!
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
-    @IBOutlet weak var shareButton: UIButton!
-    @IBOutlet weak var favoriteButton: UIButton!
-    @IBOutlet weak var reminderButton: UIButton!
+    lazy var bodyView: MovieDetailBodyView = {
+        let view = MovieDetailBodyView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .dsBGPrimary
+        return view
+    }()
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+    lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .dsTextDarkCross
+        button.backgroundColor = UIColor.dsTextLightCross.withAlphaComponent(0.4)
+        button.layer.cornerRadius = 12.5
+        button.clipsToBounds = true
+        button.setImage(R.image.close()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(self.close), for: .touchUpInside)
+        button.imageEdgeInsets = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
+        return button
+    }()
+    
+    lazy var topBarView: MovieDetailTopBarView = {
+        let view = MovieDetailTopBarView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+    //MARK: - Properties
+    var movie: MovieViewModel
+    
+    var backgroundViewHeightConstraint: NSLayoutConstraint?
+    var topBarTopConstraint: NSLayoutConstraint?
+    
+    
+    // MARK: - Static
+    static func loadDetail(movie: MovieViewModel, fromVC: UIViewController) {
+        let detailVC = MovieDetailController(movie: movie)
+        detailVC.modalPresentationStyle = .fullScreen
+        fromVC.present(detailVC, animated: true, completion: nil)
+    }
+    
+    // MARK: - Lifecycle
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    init(movie: MovieViewModel) {
+        self.movie = movie
+        super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.addViews()
         self.setDelegates()
-        self.applyStyle()
         self.loadData()
+        self.applyStyle()
     }
     
+    // MARK: - Load
     private func setDelegates() {
-        self.scrollView.delegate = self
+        self.stackScrollView.scrollView.delegate = self
+    }
+    
+    private func loadData() {
+        self.headerView.loadData(movie: self.movie, favoriteIsActive: Favorites.shared.isFavorite(movie: self.movie))
+        self.bodyView.loadData(genres: self.movie.genresText, description: self.movie.overview)
+        self.backgroundView.loadImage(url: self.movie.backdropPath)
+        self.topBarView.titleLabel.text = self.movie.title
+    }
+    
+    // MARK: - Layout
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     private func applyStyle() {
         self.view.backgroundColor = .dsBGPrimary
-        self.detailView.backgroundColor = .dsBGPrimary
-        self.highlightRatingLabel.textColor = .dsHighlight
-        self.highlightRatingImageView.tintColor = .dsHighlight
-        self.highlightReleaseDateLabel.textColor = .dsTextDarkCross
-        self.topBarTitleLabel.textColor = .dsTextDarkCross
-        self.shareButton.tintColor = .dsTextDarkCross
-        self.reminderButton.tintColor = .dsTextDarkCross
-        
-        self.highlightCoverImage.clipsToBounds = false
-        self.highlightCoverImage.layer.shadowColor = UIColor.black.cgColor
-        self.highlightCoverImage.layer.shadowOpacity = 0.5
-        self.highlightCoverImage.layer.shadowOffset = CGSize(width: 10, height: 10)
-        self.highlightCoverImage.layer.shadowRadius = 4
-        self.highlightCoverImage.layer.shadowPath = UIBezierPath(roundedRect: self.highlightCoverImage.bounds, cornerRadius: 1).cgPath
-        
-        self.detailGenresLabel.textColor = .dsTextSecondary
-        self.detailDescriptionLabel.textColor = .dsTextPrimary
-        
-        self.closeButton.tintColor = .dsTextDarkCross
-        self.closeButton.backgroundColor = UIColor.dsTextLightCross.withAlphaComponent(0.4)
-        self.closeButton.layer.cornerRadius = 12.5
-        self.closeButton.clipsToBounds = true
-        
-        self.topBarHeightConstraint.constant = TOP_BAR_HEIGHT
-        
-        if let selectedMovie = self.movie {
-            self.favoriteButton.tintColor = Favorites.shared.isFavorite(movie: selectedMovie) ? .dsRed : .dsTextDarkCross
-        }
+        self.automaticallyAdjustsScrollViewInsets = false
     }
     
-    private func loadData() {
-        guard let movieLoaded = movie else { return }
+    private func addViews() {
+        self.view.addSubview(self.backgroundView)
+        self.view.addSubview(self.stackScrollView)
+        self.view.addSubview(self.topBarView)
+        self.view.addSubview(self.closeButton)
         
-        ImageWorker.downloadImage(url: movieLoaded.posterPath) { [weak self] img, url in
-            guard let self = self else { return }
-            if self.movie?.posterPath == url {
-                self.highlightCoverImage.image = img
-            }
+        self.stackScrollView.addArrangedViews([
+            self.headerView,
+            self.bodyView
+        ])
+        
+        self.applyConstraints()
+    }
+    
+    private func applyConstraints() {
+        NSLayoutConstraint.activate([
+            self.backgroundView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.backgroundView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.backgroundView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+        ])
+        
+        self.backgroundViewHeightConstraint = self.backgroundView.heightAnchor.constraint(equalToConstant: 360)
+        self.backgroundViewHeightConstraint?.isActive = true
+        
+        NSLayoutConstraint.activate([
+            self.stackScrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.stackScrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            self.stackScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.stackScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            self.closeButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            self.closeButton.heightAnchor.constraint(equalToConstant: 25),
+            self.closeButton.widthAnchor.constraint(equalToConstant: 25)
+        ])
+        
+        if #available(iOS 11.0, *) {
+            self.closeButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        } else {
+            self.closeButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
         }
         
-        ImageWorker.downloadImage(url: movieLoaded.backdropPath) { [weak self] img, url in
-            guard let self = self else { return }
-            if self.movie?.backdropPath == url {
-                self.backgroundImage.image = img
-            }
-        }
+        NSLayoutConstraint.activate([
+            self.topBarView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.topBarView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.topBarView.heightAnchor.constraint(equalToConstant: self.TOP_BAR_HEIGHT)
+        ])
         
-        self.topBarTitleLabel.text = movieLoaded.title
-        self.highlightReleaseDateLabel.text = movieLoaded.releaseDateText
-        self.highlightRatingLabel.text = "\(movieLoaded.voteAverage) (\(movieLoaded.voteCount))"
-        self.detailGenresLabel.text = movieLoaded.genresText
-        self.detailDescriptionLabel.text = movieLoaded.overview
-        
-        self.closeButton.setImage(R.image.close()?.withRenderingMode(.alwaysTemplate), for: .normal)
-        self.shareButton.setImage(R.image.share()?.withRenderingMode(.alwaysTemplate), for: .normal)
-        self.favoriteButton.setImage(R.image.heart()?.withRenderingMode(.alwaysTemplate), for: .normal)
-        self.reminderButton.setImage(R.image.bell()?.withRenderingMode(.alwaysTemplate), for: .normal)
-        self.highlightRatingImageView.image = R.image.star()?.withRenderingMode(.alwaysTemplate)
-        
-        self.reminderButton.isHidden = movieLoaded.releaseDate < Date()
+        self.topBarTopConstraint = self.topBarView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: -self.TOP_BAR_HEIGHT)
+        self.topBarTopConstraint?.isActive = true
     }
     
     //MARK: - Actions
     
-    @IBAction func close() {
+    @objc func close() {
         self.dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func share() {
-        //TODO: share action
-        let alert = UIAlertController(title: "TOOD", message: "Share is not ready yet.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    @IBAction func reminder() {
-        //TODO: reminder action
-        let alert = UIAlertController(title: "TOOD", message: "Reminder is not ready yet.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    @IBAction func toggleFavorite() {
-        if let selectedMovie = self.movie {
-            if Favorites.shared.isFavorite(movie: selectedMovie) {
-                Favorites.shared.removeMovie(selectedMovie)
-                self.favoriteButton.tintColor = .dsTextDarkCross
-            } else {
-               Favorites.shared.addMovie(selectedMovie)
-                self.favoriteButton.tintColor = .dsRed
-            }
-        }
     }
 }
 
@@ -162,27 +191,27 @@ extension MovieDetailController: UIScrollViewDelegate {
             if offsetY < -110 {
                 self.dismiss(animated: true, completion: nil)
             } else {
-                self.backgroundImageHeightConstraint.constant = DEFAULT_BACKGROUND_HEIGHT + (-offsetY)
+                self.backgroundViewHeightConstraint?.constant = DEFAULT_BACKGROUND_HEIGHT + (-offsetY)
             }
         } else {
             self.showTopBar(offsetY > 90)
             let bgHeight = DEFAULT_BACKGROUND_HEIGHT - offsetY
-            self.backgroundImageHeightConstraint.constant = bgHeight > 0 ? bgHeight : 0
+            self.backgroundViewHeightConstraint?.constant = bgHeight > 0 ? bgHeight : 0
         }
     }
     
     private func showTopBar(_ value: Bool) {
         if value && self.topBarView.isHidden {
-            self.topBarTopConstraint.constant = 0
+            self.topBarTopConstraint?.constant = 0
             self.topBarView.isHidden = false
             self.view.setNeedsLayout()
             UIView.animate(withDuration: ANIMATION_DURATION) { [weak self] in
                 self?.view.layoutIfNeeded()
             }
         } else if !value && !self.topBarView.isHidden {
-            self.topBarTopConstraint.constant = -self.TOP_BAR_HEIGHT
+            self.topBarTopConstraint?.constant = -self.TOP_BAR_HEIGHT
             self.view.setNeedsLayout()
-            
+
             UIView.animate(withDuration: ANIMATION_DURATION, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.view.layoutIfNeeded()
             }, completion: { [weak self] finished in
@@ -191,6 +220,31 @@ extension MovieDetailController: UIScrollViewDelegate {
                 }
             })
         }
-        
+    }
+}
+
+extension MovieDetailController: MovieDetailActionDelegate {
+    func toggleReminder() {
+        //TODO: reminder action
+        let alert = UIAlertController(title: "TOOD", message: "Reminder is not ready yet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func doShare() {
+        //TODO: share action
+        let alert = UIAlertController(title: "TOOD", message: "Share is not ready yet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func toggleFavorite(completion: @escaping (Bool) -> Void) {
+        if Favorites.shared.isFavorite(movie: self.movie) {
+            Favorites.shared.removeMovie(self.movie)
+            completion(false)
+        } else {
+            Favorites.shared.addMovie(self.movie)
+            completion(true)
+        }
     }
 }

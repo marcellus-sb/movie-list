@@ -10,10 +10,19 @@ import UIKit
 
 final class FavoritesController: TabBaseController, UITableViewDataSource, UITableViewDelegate {
     
-    @IBOutlet weak var tableView: UITableView!
+    // MARK: - Views
+    lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.delegate = self
+        table.dataSource = self
+        return table
+    }()
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.addViews()
         self.regiterCells()
         self.applyStyle()
     }
@@ -23,13 +32,30 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
         self.tableView.reloadData()
     }
     
-    //MARK: - Private Methods
+    // MARK: - Lifecycle
+    private func addViews() {
+        self.view.addSubview(self.tableView)
+        
+        self.applyConstraints()
+    }
     
+    private func applyConstraints() {
+        NSLayoutConstraint.activate([
+            self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+        ])
+        
+    }
+    
+    //MARK: - Private Methods
     private func regiterCells() {
         self.tableView.register(MovieCellView.self, forCellReuseIdentifier: MovieCellView.identifier)
     }
     
     private func applyStyle() {
+        self.title = R.string.common.favorites()
         self.tableView.backgroundColor = .clear
     }
     
@@ -77,7 +103,7 @@ final class FavoritesController: TabBaseController, UITableViewDataSource, UITab
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row < Favorites.shared.list.count {
             let movie = Favorites.shared.list[indexPath.row]
-            MovieDetail2Controller.loadDetail(movie: movie, fromVC: self)
+            MovieDetailController.loadDetail(movie: movie, fromVC: self)
         }
     }
 }

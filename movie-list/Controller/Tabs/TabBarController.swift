@@ -16,6 +16,7 @@ final class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.createTabs()
         self.config()
         self.applyStyle()
     }
@@ -28,5 +29,26 @@ final class TabBarController: UITabBarController {
     private func config() {
         self.selectedIndex = DEFAULT_TAB_INDEX
     }
+    
+    private func createTabs() {
+        let favoritesListNavigation = UINavigationController(rootViewController: FavoritesController())
+        favoritesListNavigation.tabBarItem.image = R.image.heart()
+        favoritesListNavigation.tabBarItem.title = R.string.common.favorites()
+        
+        let moviesListNavigation = UINavigationController(rootViewController: MoviesListController())
+        moviesListNavigation.tabBarItem.image = R.image.list()
+        moviesListNavigation.tabBarItem.title = R.string.common.movies()
+        
+        let configNavigation = UINavigationController(rootViewController: ConfigurationController())
+        configNavigation.tabBarItem.image = R.image.settings()
+        configNavigation.tabBarItem.title = R.string.common.settings()
+        
+        self.viewControllers = [
+            favoritesListNavigation,
+            moviesListNavigation,
+            configNavigation
+        ]
+    }
+    
     
 }

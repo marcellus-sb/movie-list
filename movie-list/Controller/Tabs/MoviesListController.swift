@@ -11,40 +11,65 @@ import UIKit
 final class MoviesListController: TabBaseController, UITableViewDataSource, UITableViewDelegate {
     
     //MARK: - Constants
-    
     private let LOADING_CELL_COUNT = 3
     
     //MARK: - Public
-    
     var genresList = GenresListViewModel()
     var moviesList = MoviesListViewModel()
     
     //MARK: - Private
-    
     private var page: Int = 1
     private var genres: [GenreViewModel]?
     private var isLoading = false
     
-    //MARK: - Outlets
+    //MARK: - Views
+    lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.delegate = self
+        table.dataSource = self
+        return table
+    }()
     
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var orderButton: UIBarButtonItem!
+    lazy var orderButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: R.image.order(), style: .plain, target: self, action: #selector(self.orderList))
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.addViews()
         self.regiterCells()
         self.applyStyle()
         self.loadData()
     }
     
-    //MARK: - Private Methods
+    // MARK: - Lifecycle
+    private func addViews() {
+        self.view.addSubview(self.tableView)
+        self.navigationController?.navigationBar.topItem?.rightBarButtonItems = [self.orderButton]
+        
+        self.applyConstraints()
+    }
     
+    private func applyConstraints() {
+        NSLayoutConstraint.activate([
+            self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+        ])
+        
+    }
+    
+    //MARK: - Private Methods
     private func regiterCells() {
         self.tableView.register(MovieCellView.self, forCellReuseIdentifier: MovieCellView.identifier)
         self.tableView.register(MovieLoadingCellView.self, forCellReuseIdentifier: MovieLoadingCellView.identifier)
     }
     
     private func applyStyle() {
+        self.title = R.string.common.movies()
         self.tableView.backgroundColor = .clear
         self.orderButton.tintColor = .dsTextPrimary
     }
@@ -131,12 +156,12 @@ final class MoviesListController: TabBaseController, UITableViewDataSource, UITa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row < self.moviesList.movies.count {
             let movie = self.moviesList.movies[indexPath.row]
-            MovieDetail2Controller.loadDetail(movie: movie, fromVC: self)
+            MovieDetailController.loadDetail(movie: movie, fromVC: self)
         }
     }
     
     //MARK: - Actions
-    @IBAction func orderList() {
+    @objc func orderList() {
         self.moviesList.orderType = self.moviesList.orderType == .ascending ? .descending : .ascending
         self.tableView.reloadData()
         self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)

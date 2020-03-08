@@ -10,4 +10,12 @@ import UIKit
 
 final class ConfigurationController: TabBaseController {
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.applyStyle()
+    }
+    
+    private func applyStyle() {
+        self.title = R.string.common.settings()
+    }
 }

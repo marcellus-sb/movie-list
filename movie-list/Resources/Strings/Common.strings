@@ -1,0 +1,12 @@
+/* 
+  Common.strings
+  movie-list
+
+  Created by Marcellus Selga Batista on 07/03/20.
+  Copyright © 2020 Marcellus Selga Batista. All rights reserved.
+*/
+
+"favorites" = "Favoritos";
+"movies" = "Filmes";
+"settings" = "Configurações";
+
